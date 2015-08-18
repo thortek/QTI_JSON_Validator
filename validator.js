@@ -67,7 +67,8 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
 router.use('/upload', function(req, res) {
   request
    .get('http://validator.imsglobal.org/validate')
-   .query({ source: 'https://lti.learningcomponents.com/fileToValidate.xml' })
+   .query({ source: 'http://lti.learningcomponents.com/fileToValidate.xml' })
+   .query({ xsl: 'http://validator.imsglobal.org/template.xsl'})
    .query({ profile: 'QTIv2p1ASI_Base'})
    .end(function(err, response){
      if (err) {
