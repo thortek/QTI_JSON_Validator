@@ -41,6 +41,10 @@ let Main = React.createClass({
       paddingTop: '200px'
     };
 
+    let textStyle = {
+      width: '400px'
+    };
+
     let standardActions = [
       { text: 'Okay' }
     ];
@@ -57,7 +61,7 @@ let Main = React.createClass({
         <h1>Validate QTI JSON</h1>
         {/*<FileForm/>*/}
         <form action="/validator/upload" method="post" encType="multipart/form-data">
-          <TextField type="file" name="fileToValidate"/>
+          <TextField type="file" name="fileToValidate" style={textStyle}/>
           <br/>
           <RaisedButton label="Submit" type="Submit" primary={true}/>
         </form>

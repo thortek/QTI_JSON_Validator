@@ -48,6 +48,8 @@ router.get('/about', function(req, res) {
 
 router.post('/upload', upload.single('fileToValidate'), function (req, res, next) {
   fs.readFile('tmp/uploads/fileToConvert.json', function(err, data) {
+          // determine the profile we need to use
+
        var xml = builder.buildObject(JSON.parse(data));
           // now build XML from the resulting JSON data
         fs.writeFile('public/fileToValidate.xml', xml, function (err) {
@@ -65,12 +67,13 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
 router.use('/upload', function(req, res) {
   request
    .get('http://validator.imsglobal.org/validate')
-   .query({ source: 'fileToValidate.xml' })
-   .end(function(err, res){
+   .query({ source: 'https://lti.learningcomponents.com/fileToValidate.xml' })
+   .query({ profile: 'QTIv2p1ASI_Base'})
+   .end(function(err, response){
      if (err) {
-       res.send('Got an error trying to validate: ' + err);
+       console.log('Got an error trying to validate: ' + err);
      }
-     res.send('Done with upload operations:');
+     res.send(response.text);
    });
   //http://validator.imsglobal.org/validate?source=http://validator.imsglobal.org/test/cartridge.imscc&xsl=http://validator.imsglobal.org/template.xsl&profile=1.1.0
 });
