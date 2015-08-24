@@ -1,13 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var multer  = require('multer');
+var fileName = "";
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'tmp/uploads')
   },
   filename: function (req, file, cb) {
     //cb(null, file.originalname + '-' + Date.now())
-    cb(null, 'fileToConvert.json')
+    fileName = file.originalname;
+    //cb(null, 'fileToConvert.json')
+    cb(null, fileName);
   }
 })
 
@@ -47,7 +50,7 @@ router.get('/about', function(req, res) {
 });
 
 router.post('/upload', upload.single('fileToValidate'), function (req, res, next) {
-  fs.readFile('tmp/uploads/fileToConvert.json', function(err, data) {
+  fs.readFile('tmp/uploads/' + fileName, function(err, data) {
           // determine the profile we need to use
 
        var xml = builder.buildObject(JSON.parse(data));

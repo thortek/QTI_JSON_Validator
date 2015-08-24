@@ -14,7 +14,8 @@ let Main = React.createClass({
 
   getInitialState() {
     return {
-      commits: 0
+      commits: 0,
+      errorText: "The uploaded file must be .json"
     };
   },
 
@@ -61,7 +62,11 @@ let Main = React.createClass({
         <h1>Validate QTI JSON</h1>
         {/*<FileForm/>*/}
         <form action="/validator/upload" method="post" encType="multipart/form-data">
-          <TextField type="file" name="fileToValidate" style={textStyle}/>
+          <TextField type="file" name="fileToValidate" style={textStyle}
+        errorText={this.state.errorText}
+        errorStyle={{color:'orange'}}
+        onChange={this._handleErrorInputChange}
+        defaultValue="Custom error color" />
           <br/>
           <RaisedButton label="Submit" type="Submit" primary={true}/>
         </form>
@@ -71,6 +76,10 @@ let Main = React.createClass({
 
   _handleTouchTap() {
     this.refs.superSecretPasswordDialog.show();
+  },
+
+  _handleErrorInputChange() {
+
   }
 
 });
