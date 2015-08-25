@@ -32,6 +32,8 @@ var parser = new xml2js.Parser({
 
 var request = require('superagent');
 
+var profile = ''; // the various QTI profiles are needed to validate properly
+
 // middleware specific to this router
 // a middleware with no mount path; gets executed for every request to the app
 router.use('/upload', function(req, res, next) {
@@ -51,9 +53,17 @@ router.get('/about', function(req, res) {
 
 router.post('/upload', upload.single('fileToValidate'), function (req, res, next) {
   fs.readFile('tmp/uploads/' + fileName, function(err, data) {
-          // determine the profile we need to use
-
-       var xml = builder.buildObject(JSON.parse(data));
+          // determine the profile we need to use based on the different
+          // default name spaces declared
+          var defaultNS, tmp = JSON.parse(data);
+      if (tmp.assessmentTest) defaultNS = tmp.assessmentTest.$.xmlns;
+      if (tmp.assessmentResult) defaultNS = tmp.assessmentResult.$.xmlns;
+      if (tmp.usageData) defaultNS = tmp.usageData.$.xmlns;
+      if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1ASI_Base';
+      if (defaultNS.indexOf("imsqti_metadata_v2p1") != -1) profile = 'QTIv2p1Metadata_Base';
+      if (defaultNS.indexOf("imsqti_result_v2p1") != -1) profile = 'QTIv2p1Results_Base';
+      if (defaultNS.indexOf("imsqti_usagedata_v2p1") != -1) profile = 'QTIv2p1UsageData_Base';
+       var xml = builder.buildObject(tmp);
           // now build XML from the resulting JSON data
         fs.writeFile('public/fileToValidate.xml', xml, function (err) {
           if (err) {
@@ -72,7 +82,7 @@ router.use('/upload', function(req, res) {
    .get('http://validator.imsglobal.org/validate')
    .query({ source: 'http://lti.learningcomponents.com/fileToValidate.xml' })
    .query({ xsl: 'http://validator.imsglobal.org/template.xsl'})
-   .query({ profile: 'QTIv2p1ASI_Base'})
+   .query({ profile: profile})
    .end(function(err, response){
      if (err) {
        console.log('Got an error trying to validate: ' + err);

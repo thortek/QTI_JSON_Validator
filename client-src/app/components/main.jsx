@@ -15,7 +15,8 @@ let Main = React.createClass({
   getInitialState() {
     return {
       commits: 0,
-      errorText: "The uploaded file must be .json"
+      errorText: "The uploaded file must be .json",
+      isJson: false
     };
   },
 
@@ -53,10 +54,10 @@ let Main = React.createClass({
     return (
       <div style={containerStyle}>
         <Dialog
-          title="Super Secret Password"
+          title="JSON validator progress"
           actions={standardActions}
-          ref="superSecretPasswordDialog">
-          1-2-3-4-5
+          ref="validationDialog">
+          Your JSON file has been converted to XML and is being validated by the IMS validators at http://validator.imsglobal.org/
         </Dialog>
 
         <h1>Validate QTI JSON</h1>
@@ -68,18 +69,20 @@ let Main = React.createClass({
         onChange={this._handleErrorInputChange}
         defaultValue="Custom error color" />
           <br/>
-          <RaisedButton label="Submit" type="Submit" primary={true}/>
+          <RaisedButton label="Submit" type="Submit" primary={true}
+            disabled={!this.state.isJson}/>
         </form>
       </div>
     );
   },
 
-  _handleTouchTap() {
-    this.refs.superSecretPasswordDialog.show();
-  },
-
-  _handleErrorInputChange() {
-
+  _handleErrorInputChange(e) {
+    let value = e.target.value;
+    let extJson = value.substr(value.length - 4) === 'json';
+    this.setState({
+      isJson: extJson,
+      errorText: extJson ? '' : 'The file extension must be json.'
+    });
   }
 
 });
