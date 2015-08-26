@@ -59,8 +59,8 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
       if (tmp.assessmentTest) defaultNS = tmp.assessmentTest.$.xmlns;
       if (tmp.assessmentResult) defaultNS = tmp.assessmentResult.$.xmlns;
       if (tmp.usageData) defaultNS = tmp.usageData.$.xmlns;
-      if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1ASI_Base';
-      if (defaultNS.indexOf("imsqti_metadata_v2p1") != -1) profile = 'QTIv2p1Metadata_Base';
+      //if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1ASI_Base';
+      if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1Metadata_Base';
       if (defaultNS.indexOf("imsqti_result_v2p1") != -1) profile = 'QTIv2p1Results_Base';
       if (defaultNS.indexOf("imsqti_usagedata_v2p1") != -1) profile = 'QTIv2p1UsageData_Base';
        var xml = builder.buildObject(tmp);
