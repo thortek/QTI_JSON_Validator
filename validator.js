@@ -8,9 +8,9 @@ var storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     //cb(null, file.originalname + '-' + Date.now())
-    fileName = file.originalname;
+    fileName = file.originalname.slice(0, -5); //remove json extension
     //cb(null, 'fileToConvert.json')
-    cb(null, fileName);
+    cb(null, fileName + '.json');
   }
 })
 
@@ -52,7 +52,7 @@ router.get('/about', function(req, res) {
 });
 
 router.post('/upload', upload.single('fileToValidate'), function (req, res, next) {
-  fs.readFile('tmp/uploads/' + fileName, function(err, data) {
+  fs.readFile('tmp/uploads/' + fileName + '.json', function(err, data) {
           // determine the profile we need to use based on the different
           // default name spaces declared
           var defaultNS, tmp = JSON.parse(data);
@@ -65,11 +65,11 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
       if (defaultNS.indexOf("imsqti_usagedata_v2p1") != -1) profile = 'QTIv2p1UsageData_Base';
        var xml = builder.buildObject(tmp);
           // now build XML from the resulting JSON data
-        fs.writeFile('public/fileToValidate.xml', xml, function (err) {
+        fs.writeFile('public/' + fileName + '.xml', xml, function (err) {
           if (err) {
             console.log("Got error writing from JSON back to XML: " + err);
           }
-            console.log("File saved as fileToValidate.xml");
+            console.log("File saved as " + fileName + '.xml');
           });
         console.log('Now validation should take over');
     });
@@ -80,7 +80,7 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
 router.use('/upload', function(req, res) {
   request
    .get('http://validator.imsglobal.org/validate')
-   .query({ source: 'http://lti.learningcomponents.com/fileToValidate.xml' })
+   .query({ source: 'http://lti.learningcomponents.com/' + fileName + '.xml' })
    .query({ xsl: 'http://validator.imsglobal.org/template.xsl'})
    .query({ profile: profile})
    .end(function(err, response){
