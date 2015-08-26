@@ -65,7 +65,7 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
       if (defaultNS.indexOf("imsqti_usagedata_v2p1") != -1) profile = 'QTIv2p1UsageData_Base';
        var xml = builder.buildObject(tmp);
           // now build XML from the resulting JSON data
-        fs.writeFile('public/' + fileName + '.xml', xml, function (err) {
+        fs.writeFile('public/temp/' + fileName + '.xml', xml, function (err) {
           if (err) {
             console.log("Got error writing from JSON back to XML: " + err);
           }
@@ -80,7 +80,7 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
 router.use('/upload', function(req, res) {
   request
    .get('http://validator.imsglobal.org/validate')
-   .query({ source: 'http://lti.learningcomponents.com/' + fileName + '.xml' })
+   .query({ source: 'http://lti.learningcomponents.com/temp/' + fileName + '.xml' })
    .query({ xsl: 'http://validator.imsglobal.org/template.xsl'})
    .query({ profile: profile})
    .end(function(err, response){
