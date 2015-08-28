@@ -53,14 +53,15 @@ router.get('/about', function(req, res) {
 
 router.post('/upload', upload.single('fileToValidate'), function (req, res, next) {
   fs.readFile('tmp/uploads/' + fileName + '.json', function(err, data) {
-          // determine the profile we need to use based on the different
-          // default name spaces declared
-          var defaultNS, tmp = JSON.parse(data);
+      // determine the profile we need to use based on the different
+      // default name spaces declared
+      var defaultNS = '';
+      var tmp = JSON.parse(data);
       if (tmp.assessmentTest) defaultNS = tmp.assessmentTest.$.xmlns;
       if (tmp.assessmentResult) defaultNS = tmp.assessmentResult.$.xmlns;
       if (tmp.usageData) defaultNS = tmp.usageData.$.xmlns;
-      //if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1ASI_Base';
-      if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1Metadata_Base';
+      if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1ASI_Base';
+      //if (defaultNS.indexOf("imsqti_v2p1") != -1) profile = 'QTIv2p1Metadata_Base';
       if (defaultNS.indexOf("imsqti_result_v2p1") != -1) profile = 'QTIv2p1Results_Base';
       if (defaultNS.indexOf("imsqti_usagedata_v2p1") != -1) profile = 'QTIv2p1UsageData_Base';
        var xml = builder.buildObject(tmp);
@@ -70,14 +71,14 @@ router.post('/upload', upload.single('fileToValidate'), function (req, res, next
             console.log("Got error writing from JSON back to XML: " + err);
           }
             console.log("File saved as " + fileName + '.xml');
+            next('route');
           });
-        console.log('Now validation should take over');
     });
   //this has multer upload the file and pass it on for further manipulation
-  next();
+
 });
 
-router.use('/upload', function(req, res) {
+router.post('/upload', function(req, res) {
   request
    .get('http://validator.imsglobal.org/validate')
    .query({ source: 'http://lti.learningcomponents.com/temp/' + fileName + '.xml' })
